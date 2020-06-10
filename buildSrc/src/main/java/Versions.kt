@@ -10,6 +10,12 @@ object Versions {
     const val oneSignalPlugin = "0.12.7"
     const val oneSignal = "3.14.0"
 
+    //Admob
+    const val admob = "19.1.0"
+
+    //EuConsent
+    const val EuConsent = "1.0.6"
+
     // App
     const val minSdk = 21
     const val targetSdk = 29

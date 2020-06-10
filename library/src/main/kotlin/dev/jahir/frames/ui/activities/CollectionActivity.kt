@@ -23,10 +23,27 @@ open class CollectionActivity : BaseChangelogDialogActivity<Preferences>() {
     private var collection: Collection? = null
     private var collectionName: String = ""
     private var favoritesModified: Boolean = false
+    private lateinit var mInterstitialAd: InterstitialAd
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_fragments)
+
+	// Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713
+        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713")
+        mInterstitialAd = InterstitialAd(this)
+        mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+        mInterstitialAd.loadAd(AdRequest.Builder().build())
+
+        mInterstitialAd.adListener = object: AdListener() {
+            override fun onAdLoaded() {
+                if (mInterstitialAd.isLoaded) {
+                    mInterstitialAd.show()
+                } else {
+                    Log.d("TAG", "The interstitial wasn't loaded yet.")
+                }
+            }
+        }
 
         setSupportActionBar(toolbar)
         supportActionBar?.let {

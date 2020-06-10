@@ -78,6 +78,12 @@ object Libs {
     // OneSignal
     const val oneSignal = "com.onesignal:OneSignal:${Versions.oneSignal}"
 
+    //Admob
+    const val admob = "com.google.android.gms:play-services-ads:{Versions.admob}"
+
+    //EuConsent
+    const val EuConsent = "com.google.android.ads.consent:consent-library:{Versions.EuConsent}"
+
     // Muzei API
     const val muzei = "com.google.android.apps.muzei:muzei-api:${Versions.muzei}"
 

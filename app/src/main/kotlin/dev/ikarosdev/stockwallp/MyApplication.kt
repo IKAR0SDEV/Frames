@@ -1,4 +1,4 @@
-package dev.jahir.frames.app
+package dev.ikarosdev.stockwallp
 
 import dev.jahir.frames.ui.FramesApplication
 

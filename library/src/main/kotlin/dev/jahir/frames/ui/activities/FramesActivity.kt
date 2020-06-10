@@ -43,10 +43,82 @@ abstract class FramesActivity : BaseBillingActivity<Preferences>() {
 
     private var currentTag: String = initialFragmentTag
     private var oldTag: String = initialFragmentTag
+    private var form: ConsentForm? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(getLayoutRes())
+
+	val consentInformation = ConsentInformation.getInstance(applicationContext)
+        val publisherIds = arrayOf("pub-0123456789012345")
+        consentInformation.requestConsentInfoUpdate(publisherIds, object : ConsentInfoUpdateListener {
+            override fun onConsentInfoUpdated(consentStatus: ConsentStatus) {
+                // User's consent status successfully updated.
+                val inEEA = ConsentInformation.getInstance(applicationContext).isRequestLocationInEeaOrUnknown
+
+                if (inEEA) {
+                    Toast.makeText(this@FramesActivity, consentStatus.toString(), Toast.LENGTH_SHORT).show()
+                    if (consentStatus == ConsentStatus.PERSONALIZED || consentStatus == ConsentStatus.NON_PERSONALIZED) {
+                        val extras = Bundle()
+                        extras.putString("npa", "1")
+
+                        val request = AdRequest.Builder()
+                                .addNetworkExtrasBundle(AdMobAdapter::class.java, extras)
+                                .build()
+                    } else {
+                        var privacyUrl: URL? = null
+                        try {
+                            // TODO: Replace with your app's privacy policy URL.
+                            privacyUrl = URL("http://animpapers.altervista.org/PrivacyPolicy/Privacy_Policy.html")
+                        } catch (e: MalformedURLException) {
+                            e.printStackTrace()
+                            // Handle error.
+                        }
+
+                        form = ConsentForm.Builder(this@FramesActivity, privacyUrl)
+                                .withListener(object : ConsentFormListener() {
+                                    override fun onConsentFormLoaded() {
+                                        // Consent form loaded successfully.
+                                        form?.show()
+                                    }
+
+                                    override fun onConsentFormOpened() {
+                                        // Consent form was displayed.
+                                    }
+
+                                    override fun onConsentFormClosed(
+                                            consentStatus: ConsentStatus?, userPrefersAdFree: Boolean?) {
+                                        // Consent form was closed.
+                                        val extras = Bundle()
+                                        extras.putString("npa", "1")
+
+                                        val request = AdRequest.Builder()
+                                                .addNetworkExtrasBundle(AdMobAdapter::class.java, extras)
+                                                .build()
+                                    }
+
+                                    override fun onConsentFormError(errorDescription: String?) {
+                                        // Consent form error.
+                                    }
+                                })
+                                .withPersonalizedAdsOption()
+                                .withNonPersonalizedAdsOption()
+                                // .withAdFreeOption()
+                                .build()
+                        form?.load()
+
+                    }
+                } else {
+                    //  Toast.makeText(StickerPackListActivity.this, "Not In EEA", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+
+            override fun onFailedToUpdateConsentInfo(errorDescription: String) {
+                // User's consent status failed to update.
+                //  Toast.makeText(StickerPackListActivity.this, errorDescription, Toast.LENGTH_SHORT).show();
+            }
+        })
 
         setSupportActionBar(toolbar)
         changeFragment(initialItemId, force = true)
