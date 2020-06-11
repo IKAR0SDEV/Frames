@@ -77,6 +77,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     api Libs.dependencies
     kapt Libs.kaptDependencies
+    implementation Libs.admob
+    implementation Libs.EuConsent
 }
 
 apply from: '../lib-artifacts.gradle'
